@@ -5,7 +5,7 @@
 .SUFFIXES: .o .c
 .PHONY: clean mrclean distclean depend all dist
 
-
+INSTALLDIR = $(IPNC_EXEC_DIR)
 
 GCC_FLAGS = -Wstrict-prototypes -Wpointer-arith -Wcast-align -Wcast-qual\
   -Wtraditional\
@@ -28,8 +28,9 @@ CFLAGS = -g -O2 -pipe -Wall -I.
 
 YACC = bison -y 
 LEX = flex 
-CC = arm-arago-linux-gnueabi-gcc 
-CPP = arm-arago-linux-gnueabi-gcc -E
+CC = $(BUILD_TOOL_PREFIX)gcc 
+CPP = $(BUILD_TOOL_PREFIX)g++
+AR = $(BUILD_TOOL_PREFIX)ar rcs
 
 SOURCES = alias.c boa.c buffer.c cgi.c cgi_header.c config.c escape.c \
 	get.c hash.c ip.c log.c mmap_cache.c pipe.c queue.c read.c \
@@ -38,6 +39,9 @@ SOURCES = alias.c boa.c buffer.c cgi.c cgi_header.c config.c escape.c \
 OBJS = y.tab.o lex.yy.o $(SOURCES:.c=.o) timestamp.o 
 
 all:	boa boa_indexer
+
+install: boa
+	install boa $(INSTALLDIR)
 
 boa:	$(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
